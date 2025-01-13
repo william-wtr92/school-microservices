@@ -7,16 +7,28 @@ import com.example.studentservice.entity.Student;
 import com.example.studentservice.mapper.StudentMapper;
 import com.example.studentservice.repository.StudentRepository;
 import com.example.studentservice.service.StudentService;
+import com.example.studentservice.utils.SchoolServiceEndpoints;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-@AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
-    private StudentRepository studentRepository;
-    private StudentMapper studentMapper;
-    private WebClient webClient;
+    private final StudentRepository studentRepository;
+    private final StudentMapper studentMapper;
+    private final WebClient webClient;
+    private final String schoolServiceUrl;
+
+    public StudentServiceImpl(StudentRepository studentRepository,
+                              StudentMapper studentMapper,
+                              WebClient webClient,
+                              @Value("${school-service.url}") String schoolServiceUrl) {
+        this.studentRepository = studentRepository;
+        this.studentMapper = studentMapper;
+        this.webClient = webClient;
+        this.schoolServiceUrl = schoolServiceUrl;
+    }
 
     @Override
     public void createStudent(StudentDto studentDto) {
@@ -26,19 +38,27 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public GetStudentDto getStudent(String id) {
-        Student student = studentRepository.findById(id).orElse(null);
+        Student student = studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
 
-        SchoolDto school = webClient.get()
-                .uri("/api/school/{id}", student.getSchoolId())
-                .retrieve()
-                .bodyToMono(SchoolDto.class)
-                .block();
+        String url = schoolServiceUrl + SchoolServiceEndpoints.GET_SCHOOL_BY_ID;
+        System.out.println("Calling school-service with URL: " + url);
 
+        try {
+            SchoolDto school = webClient.get()
+                    .uri(url, student.getSchoolId())
+                    .retrieve()
+                    .bodyToMono(SchoolDto.class)
+                    .block();
 
-        StudentDto studentDto = studentMapper.toDto(student);
+            StudentDto studentDto = studentMapper.toDto(student);
+            return new GetStudentDto(studentDto, school);
 
-        return new GetStudentDto(studentDto, school);
+        } catch (Exception e) {
+            System.out.println("Error calling school-service: " + e.getMessage());
+            throw e;
+        }
     }
+
 
     @Override
     public void updateStudent(String id, StudentDto studentDto) {
