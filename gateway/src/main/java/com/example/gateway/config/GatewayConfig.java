@@ -12,8 +12,14 @@ public class GatewayConfig {
     public RouteLocator customRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("school_route", r -> r.path("/api/school/**")
+                        .filters(f -> f.circuitBreaker(cb -> cb
+                                .setName("schoolServiceCB")
+                                .setFallbackUri("forward:/fallback/school")))
                         .uri("lb://school-service"))
                 .route("student_route", r -> r.path("/api/student/**")
+                        .filters(f -> f.circuitBreaker(cb -> cb
+                                .setName("studentServiceCB")
+                                .setFallbackUri("forward:/fallback/student")))
                         .uri("lb://student-service"))
                 .build();
     }
