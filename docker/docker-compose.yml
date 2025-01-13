@@ -1,0 +1,145 @@
+services:
+  consul:
+    image: hashicorp/consul
+    command: "agent -dev -client=0.0.0.0"
+    ports:
+      - "8500:8500"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8500/v1/status/leader" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: schooldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -h localhost -d schooldb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  gateway:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - app_network
+    depends_on:
+      - consul
+      - school-service-1
+      - school-service-2
+      - student-service-1
+      - student-service-2
+
+  school-service-1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.school-service
+    ports:
+      - "8081:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=docker
+      - spring.cloud.consul.discovery.instance-id=school-service-1
+    networks:
+      - app_network
+    depends_on:
+      consul:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  school-service-2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.school-service
+    ports:
+      - "8082:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=docker
+      - spring.cloud.consul.discovery.instance-id=school-service-2
+    networks:
+      - app_network
+    depends_on:
+      consul:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  student-service-1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.student-service
+    ports:
+      - "8091:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=docker
+      - spring.cloud.consul.discovery.instance-id=student-service-1
+    networks:
+      - app_network
+    depends_on:
+      consul:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+
+  student-service-2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.student-service
+    ports:
+      - "8092:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=docker
+      - spring.cloud.consul.discovery.instance-id=student-service-2
+    networks:
+      - app_network
+    depends_on:
+      consul:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongo_data:
