@@ -12,9 +12,9 @@ services:
     networks:
       - app_network
 
-  postgres:
+  postgres-1:
     image: postgres:alpine
-    container_name: postgres
+    container_name: postgres-1
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -22,9 +22,28 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres1_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -h localhost -d schooldb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  postgres-2:
+    image: postgres:alpine
+    container_name: postgres-2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: authdb
+    ports:
+      - "5433:5432"
+    volumes:
+        - postgres2_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -h localhost -d authdb" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -53,12 +72,14 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=docker
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
     networks:
       - app_network
     depends_on:
       - consul
+      - auth-service-1
+      - auth-service-2
       - school-service-1
       - school-service-2
       - student-service-1
@@ -84,6 +105,42 @@ services:
     networks:
       - app_network
 
+  auth-service-1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.auth-service
+    ports:
+      - "8071:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
+      spring.cloud.consul.discovery.instance-id: auth-service-1
+    networks:
+      - app_network
+    depends_on:
+      consul:
+        condition: service_healthy
+      postgres-2:
+        condition: service_healthy
+
+  auth-service-2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.auth-service
+    ports:
+      - "8072:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
+      spring.cloud.consul.discovery.instance-id: auth-service-2
+    networks:
+      - app_network
+    depends_on:
+      consul:
+        condition: service_healthy
+      postgres-2:
+        condition: service_healthy
+
   school-service-1:
     build:
       context: ..
@@ -91,15 +148,15 @@ services:
     ports:
       - "8081:8080"
     environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=docker
-      - spring.cloud.consul.discovery.instance-id=school-service-1
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
+      spring.cloud.consul.discovery.instance-id: school-service-1
     networks:
       - app_network
     depends_on:
       consul:
         condition: service_healthy
-      postgres:
+      postgres-1:
         condition: service_healthy
 
   school-service-2:
@@ -109,15 +166,15 @@ services:
     ports:
       - "8082:8080"
     environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=docker
-      - spring.cloud.consul.discovery.instance-id=school-service-2
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
+      spring.cloud.consul.discovery.instance-id: school-service-2
     networks:
       - app_network
     depends_on:
       consul:
         condition: service_healthy
-      postgres:
+      postgres-1:
         condition: service_healthy
 
   student-service-1:
@@ -127,9 +184,9 @@ services:
     ports:
       - "8091:8080"
     environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=docker
-      - spring.cloud.consul.discovery.instance-id=student-service-1
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
+      spring.cloud.consul.discovery.instance-id: student-service-1
     networks:
       - app_network
     depends_on:
@@ -145,9 +202,9 @@ services:
     ports:
       - "8092:8080"
     environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=docker
-      - spring.cloud.consul.discovery.instance-id=student-service-2
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
+      spring.cloud.consul.discovery.instance-id: student-service-2
     networks:
       - app_network
     depends_on:
@@ -161,5 +218,6 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  postgres1_data:
+  postgres2_data:
   mongo_data:
