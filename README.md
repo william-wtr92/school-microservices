@@ -4,8 +4,16 @@
 
 # 🚧 Installation
 
-`brew install consul`
-`consul agent -dev`
+### ⚙️ Local
+
+- `brew install consul`
+- `consul agent -dev`
+- start all services (gateway, school, student)
+
+### 🐳 Docker
+
+- `make build` or `make no-cache`
+- `make up`
 
 # 🧩 Features 
 
