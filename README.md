@@ -23,7 +23,7 @@
 - [x] Gateway (Spring Cloud Gateway)
 - [x] Monitoring and Logging (Prometheus, Grafana)
 
-# 🚀 Grafana Dashboard
+# 🚀 Grafana Dashboard (id: 4701)
 
 ### 🌐 Gateway Panel
 ![grafana-gateway.png](docs/grafana-gateway.png)

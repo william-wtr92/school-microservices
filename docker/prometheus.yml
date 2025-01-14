@@ -16,3 +16,8 @@ scrape_configs:
     metrics_path: /actuator/prometheus
     static_configs:
       - targets: ['student-service-1:8080', 'student-service-2:8080']
+
+  - job_name: 'auth-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['auth-service-1:8080', 'auth-service-2:8080']
