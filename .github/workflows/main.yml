@@ -58,31 +58,32 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./gateway
-          file: ./gateway/docker/Dockerfile.gateway
+          file: ./docker/Dockerfile.gateway
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-gateway:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-gateway:latest
 
-      - name: 🔨 Build and push Docker image (school service)
+      - name: 🔨 Build and push Docker image (school-service)
         uses: docker/build-push-action@v6
         with:
           context: ./school-service
-          file: ./school-service/docker/Dockerfile.school-service
+          file: ./docker/Dockerfile.school-service
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-school-service:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-school-service:latest
 
-      - name: 🔨 Build and push Docker image (student service)
+      - name: 🔨 Build and push Docker image (student-service)
         uses: docker/build-push-action@v6
         with:
           context: ./student-service
-          file: ./student-service/docker/Dockerfile.student-service
+          file: ./docker/Dockerfile.student-service
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-student-service:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-student-service:latest
+      
