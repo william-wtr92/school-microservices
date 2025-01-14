@@ -26,6 +26,21 @@ jobs:
       - name: 🧩 Checkout repository
         uses: actions/checkout@v4
 
+      - name: 🔨 Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: 🔨 Build JAR files for all services
+        run: |
+          echo "Building JAR for gateway"
+          cd ./gateway && ./gradlew clean build
+          echo "Building JAR for school service"
+          cd ../school-service && ./gradlew clean build
+          echo "Building JAR for student service"
+          cd ../student-service && ./gradlew clean build
+
       - name: 🧩 Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -42,30 +57,30 @@ jobs:
       - name: 🔨 Build and push Docker image (gateway)
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: docker/Dockerfile.gateway
+          context: ./gateway
+          file: ./gateway/docker/Dockerfile.gateway
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-gateway:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-gateway:latest
 
-      - name: 🔨 Build and push Docker image (school-service)
+      - name: 🔨 Build and push Docker image (school service)
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: docker/Dockerfile.school-service
+          context: ./school-service
+          file: ./school-service/docker/Dockerfile.school-service
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-school-service:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-school-service:latest
 
-      - name: 🔨 Build and push Docker image (student-service)
+      - name: 🔨 Build and push Docker image (student service)
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: docker/Dockerfile.student-service
+          context: ./student-service
+          file: ./student-service/docker/Dockerfile.student-service
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
