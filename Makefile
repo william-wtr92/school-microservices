@@ -27,7 +27,7 @@ down: ## Stop services
 	$(DC) down
 	@echo "Services are down 🛑!"
 
-build: ## Build or rebuild services
+build: build-jar ## Build or rebuild services
 	$(DC) build
 	@echo "Services are built 🧩!"
 
