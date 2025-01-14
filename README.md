@@ -17,17 +17,17 @@
 
 # 🧩 Features 
 
-- [x] Service Discovery
-- [x] Load Balancing
-- [x] Circuit Breaker
-- [x] Gateway
-- [x] Monitoring and Logging
+- [x] Service Discovery (Consul)
+- [x] Load Balancing (Spring Cloud Loadbalancer)
+- [x] Circuit Breaker (Resilience4j)
+- [x] Gateway (Spring Cloud Gateway)
+- [x] Monitoring and Logging (Prometheus, Grafana)
 
 # 🚀 Grafana Dashboard
 
 ### 🌐 Gateway Panel
-![img.png](docs/img.png)
+![grafana-gateway.png](docs/grafana-gateway.png)
 
 ### 💻 Service Panel
-![img_1.png](docs/img_1.png)
+![grafana-service.png](docs/grafana-service.png)
 
