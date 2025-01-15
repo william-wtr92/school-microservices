@@ -12,6 +12,8 @@ help: ## Display this help message
 	@echo "  make build              # Build services"
 
 build-jar: ## Build JAR files for all services
+	@echo "Building JAR for config server"
+	cd $(PROJECT_ROOT)/config && ./gradlew build
 	@echo "Building JAR for gateway"
 	cd $(PROJECT_ROOT)/gateway && ./gradlew build
 	@echo "Building JAR for auth service"

@@ -113,6 +113,18 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_PROVISIONING_PATH=/etc/grafana/provisioning
 
+  config:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.conf
+    ports:
+      - "8888:8888"
+    environment:
+      SERVER_PORT: 8888
+      spring.cloud.consul.discovery.instance-id: config
+    networks:
+      - app_network
+
   auth-service-1:
     build:
       context: ..
@@ -159,6 +171,7 @@ services:
       SERVER_PORT: 8080
       SPRING_PROFILES_ACTIVE: docker
       spring.cloud.consul.discovery.instance-id: school-service-1
+      spring.cloud.config.uri: http://config:8888
     networks:
       - app_network
     depends_on:
@@ -177,6 +190,7 @@ services:
       SERVER_PORT: 8080
       SPRING_PROFILES_ACTIVE: docker
       spring.cloud.consul.discovery.instance-id: school-service-2
+      spring.cloud.config.uri: http://config:8888
     networks:
       - app_network
     depends_on:
