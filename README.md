@@ -22,6 +22,7 @@
 - [x] Circuit Breaker (Resilience4j)
 - [x] Gateway (Spring Cloud Gateway)
 - [x] Monitoring and Logging (Prometheus, Grafana)
+- [x] Configuration Management (Spring Cloud Config)
 
 # 🚀 Grafana Dashboard (id: 4701)
 
