@@ -34,8 +34,6 @@ jobs:
 
       - name: 🔨 Build JAR files for all services
         run: |
-          echo "Building JAR for config server"
-          cd ./config && ./gradlew clean build
           echo "Building JAR for gateway"
           cd ./gateway && ./gradlew clean build
           echo "Building JAR for auth service"
@@ -57,17 +55,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🔨 Build and push Docker image (config)
-        uses: docker/build-push-action@v6
-        with:
-          context: ./
-          file: ./docker/Dockerfile.conf
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-gateway:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-gateway:latest
 
       - name: 🔨 Build and push Docker image (gateway)
         uses: docker/build-push-action@v6
