@@ -2,6 +2,10 @@
 
 > Microservices project for school, using Spring Boot, Consul, Grafana, Prometheus and Docker.
 
+## 🚀 Architecture
+
+![architecture.png](docs/architecture.png)
+
 # 🚧 Installation
 
 ### ⚙️ Local
