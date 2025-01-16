@@ -1,4 +1,4 @@
-package com.example.authservice.utils;
+package com.example.schoolservice.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

@@ -3,6 +3,7 @@ package com.example.authservice.controller;
 import com.example.authservice.dto.LoginDto;
 import com.example.authservice.dto.UserDto;
 import com.example.authservice.service.AuthService;
+import com.example.authservice.utils.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,30 +18,48 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginDto loginDto) {
         String token = authService.login(loginDto);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, "jwt=" + token + "; HttpOnly; SameSite=Strict; Path=/; Max-Age=86400");
 
-        return ResponseEntity.ok().headers(headers).build();
+        ApiResponse<?> response = new ApiResponse<>("Login successful", HttpStatus.OK.value(), true);
+
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse<?>> register(@Valid @RequestBody UserDto userDto) {
         authService.register(userDto);
 
-        return ResponseEntity.ok("User registered successfully");
+        ApiResponse<?> response = new ApiResponse<>("User registered successfully", HttpStatus.OK.value(), true);
+
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<String> validateToken(@CookieValue(value = "jwt", required = false) String token) {
+    public ResponseEntity<ApiResponse<String>> validateToken(@CookieValue(value = "jwt", required = false) String token) {
         if (token == null || token.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid token");
+            ApiResponse<String> response = new ApiResponse<>(
+                    "Token is invalid",
+                    HttpStatus.UNAUTHORIZED.value(),
+                    null,
+                    false
+            );
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
         String username = authService.validateToken(token);
 
-        return ResponseEntity.ok("Token is valid. Username: " + username);
+        ApiResponse<String> response = new ApiResponse<>(
+                "Token is valid",
+                HttpStatus.OK.value(),
+                username,
+                true
+        );
+
+        return ResponseEntity.ok().body(response);
     }
 }

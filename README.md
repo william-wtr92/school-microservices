@@ -18,6 +18,7 @@
 
 - `make build` or `make no-cache`
 - `make up`
+- ➡️`http://localhost:8080/api/`
 
 # 🧩 Features 
 
