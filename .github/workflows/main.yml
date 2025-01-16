@@ -35,15 +35,15 @@ jobs:
       - name: 🔨 Build JAR files for all services
         run: |
           echo "Building JAR for gateway"
-          cd ./services/gateway && ./gradlew clean build
+          cd $GITHUB_WORKSPACE/services/gateway && ./gradlew clean build
           echo "Building JAR for config server"
-          cd ./services/config && ./gradlew clean build
+          cd $GITHUB_WORKSPACE/services/config && ./gradlew clean build
           echo "Building JAR for auth service"
-          cd ./services/auth-service && ./gradlew clean build
+          cd $GITHUB_WORKSPACE/services/auth-service && ./gradlew clean build
           echo "Building JAR for school service"
-          cd ./services/school-service && ./gradlew clean build
+          cd $GITHUB_WORKSPACE/services/school-service && ./gradlew clean build
           echo "Building JAR for student service"
-          cd ./services/student-service && ./gradlew clean build
+          cd $GITHUB_WORKSPACE/services/student-service && ./gradlew clean build
 
       - name: 🧩 Set up QEMU
         uses: docker/setup-qemu-action@v3
