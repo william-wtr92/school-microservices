@@ -13,15 +13,15 @@ help: ## Display this help message
 
 build-jar: ## Build JAR files for all services
 	@echo "Building JAR for config server"
-	cd $(PROJECT_ROOT)/config && ./gradlew build
+	cd $(PROJECT_ROOT)/services/config && ./gradlew build
 	@echo "Building JAR for gateway"
-	cd $(PROJECT_ROOT)/gateway && ./gradlew build
+	cd $(PROJECT_ROOT)/services/gateway && ./gradlew build
 	@echo "Building JAR for auth service"
-	cd $(PROJECT_ROOT)/auth-service && ./gradlew build
+	cd $(PROJECT_ROOT)/services/auth-service && ./gradlew build
 	@echo "Building JAR for school service"
-	cd $(PROJECT_ROOT)/school-service && ./gradlew build
+	cd $(PROJECT_ROOT)/services/school-service && ./gradlew build
 	@echo "Building JAR for student service"
-	cd $(PROJECT_ROOT)/student-service && ./gradlew build
+	cd $(PROJECT_ROOT)/services/student-service && ./gradlew build
 
 up: ## Start services
 	$(DC) up -d

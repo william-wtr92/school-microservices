@@ -2,7 +2,7 @@ FROM openjdk:21-jdk-slim AS builder
 
 WORKDIR /app
 
-COPY ../student-service/build/libs/student-service.jar ./app.jar
+COPY ../services/student-service/build/libs/student-service.jar ./app.jar
 
 FROM openjdk:21-jdk-slim
 

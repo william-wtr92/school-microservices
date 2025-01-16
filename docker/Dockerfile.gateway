@@ -2,7 +2,7 @@ FROM openjdk:21-jdk-slim AS builder
 
 WORKDIR /app
 
-COPY ../gateway/build/libs/gateway.jar ./app.jar
+COPY ../services/gateway/build/libs/gateway.jar ./app.jar
 
 FROM openjdk:21-jdk-slim
 

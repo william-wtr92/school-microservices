@@ -2,7 +2,7 @@ FROM openjdk:21-jdk-slim AS builder
 
 WORKDIR /app
 
-COPY ../auth-service/build/libs/auth-service.jar ./app.jar
+COPY ../services/auth-service/build/libs/auth-service.jar ./app.jar
 
 FROM openjdk:21-jdk-slim
 
