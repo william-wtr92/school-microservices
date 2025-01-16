@@ -1,6 +1,6 @@
 # 🎓 School Project Microservices
 
-> Microservices project for school, using Spring Boot, Consul, Grafana, Prometheus and Docker.
+> Microservices project for school, using Spring Boot, Spring Cloud Config, Spring Cloud Gateway, Spring Cloud Load Balancer, Consul, Grafana, Prometheus and Docker.
 
 ## 🚀 Architecture
 
